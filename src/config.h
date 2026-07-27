@@ -26,3 +26,9 @@
 #define LED_FLASH_MS 400 // how long a hit lights up its zone
 
 #define ADC_RESOLUTION_BITS 12
+
+// Set to 1 to stream raw ADC counts per zone over Serial (e.g. for the
+// Arduino Serial Plotter) instead of running hit detection. Use this to
+// tap the panel and find a real ADC_HIT_THRESHOLD before flipping back to 0.
+#define DEBUG_ADC_STREAM 0
+

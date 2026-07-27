@@ -55,7 +55,22 @@ void setup() {
   strip.show();
 }
 
+#if DEBUG_ADC_STREAM
+void loopDebugAdcStream() {
+  for (uint8_t zone = 0; zone < NUM_ZONES; zone++) {
+    Serial.print(readZone(zone));
+    Serial.print(zone + 1 < NUM_ZONES ? "\t" : "\n");
+  }
+  delay(10);
+}
+#endif
+
 void loop() {
+#if DEBUG_ADC_STREAM
+  loopDebugAdcStream();
+  return;
+#endif
+
   unsigned long now = millis();
 
   for (uint8_t zone = 0; zone < NUM_ZONES; zone++) {
