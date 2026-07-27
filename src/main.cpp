@@ -1,0 +1,25 @@
+#include <Arduino.h>
+#include "config.h"
+#include "SensorArray.h"
+#include "LedController.h"
+#include "GridClearGame.h"
+#include "GameEngine.h"
+
+SensorArray sensors(ZONE_COUNT, MUX_S0_PIN, MUX_S1_PIN, MUX_S2_PIN, MUX_S3_PIN,
+                     MUX_SIG_PIN, MUX_SETTLE_US,
+                     HIT_THRESHOLD, ARBITRATION_WINDOW_MS, HIT_LOCKOUT_MS);
+LedController leds(ZONE_COUNT, LEDS_PER_ZONE, LED_DATA_PIN, LED_BRIGHTNESS);
+GridClearGame grid(ZONE_COUNT, GRID_GAME_DURATION_MS);
+GameEngine engine(sensors, leds, grid, COUNTDOWN_MS, RESULTS_DISPLAY_MS);
+
+void setup() {
+    Serial.begin(115200);
+    delay(200);
+    sensors.begin();
+    leds.begin();
+    engine.begin();
+}
+
+void loop() {
+    engine.update(millis());
+}
