@@ -33,6 +33,13 @@ constexpr uint32_t ARBITRATION_WINDOW_MS = 15; // plan calls for comparing ampli
 constexpr uint32_t HIT_LOCKOUT_MS = 150;       // plan calls for a 100-250ms per-zone lockout after a hit
 
 // ---- Game timing defaults ----
-constexpr uint32_t GRID_GAME_DURATION_MS = 30000; // MVP round length
+constexpr uint32_t GRID_GAME_DURATION_MS = 30000;   // Grid Clear round length
+constexpr uint32_t RANDOM_GAME_DURATION_MS = 30000; // Random Grid round length
+constexpr uint8_t RANDOM_TARGET_COUNT = 2;          // how many of ZONE_COUNT zones are live targets each round
+constexpr uint32_t SPLIT_GAME_DURATION_MS = 30000;  // Two-Player Split round length
+// Zones [0, TWO_PLAYER_LEFT_COUNT) are the left player's; the rest are the
+// right player's. Defaults to an even split of ZONE_COUNT.
+constexpr uint8_t TWO_PLAYER_LEFT_COUNT = ZONE_COUNT / 2;
+
 constexpr uint32_t COUNTDOWN_MS = 3000;
 constexpr uint32_t RESULTS_DISPLAY_MS = 4000;

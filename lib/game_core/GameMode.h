@@ -17,6 +17,9 @@ struct GameResult {
     uint16_t extraHits = 0; // hits on zones that weren't (or were no longer) live targets
     uint32_t elapsedMs = 0;
     bool completed = false; // true = all targets cleared before time expired
+    // -1 = not applicable (single-player modes leave this alone), 0 = left/player-A
+    // won, 1 = right/player-B won, 2 = draw. Only multi-player modes set this.
+    int8_t winner = -1;
 };
 
 // Interface every game/drill mode implements. GameEngine only talks to this,
@@ -31,5 +34,11 @@ public:
     virtual bool isGameOver() const = 0;
     virtual const GameResult& result() const = 0;
     virtual const char* name() const = 0;
+
+    // No-op by default. Modes with an internal random source (RandomGridGame)
+    // override this so GameEngine can re-seed it with fresh entropy before
+    // each round without needing to know the mode's concrete type.
+    virtual void reseed(uint32_t seed) { (void)seed; }
+
     virtual ~GameMode() = default;
 };
