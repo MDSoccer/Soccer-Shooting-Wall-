@@ -20,6 +20,9 @@ struct GameResult {
     // -1 = not applicable (single-player modes leave this alone), 0 = left/player-A
     // won, 1 = right/player-B won, 2 = draw. Only multi-player modes set this.
     int8_t winner = -1;
+    // Best full-clear time recorded so far this session. 0 = not applicable /
+    // no record yet. Only modes that track a running best time set this.
+    uint32_t bestTimeMs = 0;
 };
 
 // Interface every game/drill mode implements. GameEngine only talks to this,

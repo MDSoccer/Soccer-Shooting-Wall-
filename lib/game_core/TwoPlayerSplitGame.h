@@ -3,7 +3,7 @@
 
 // Zones [0, leftCount) belong to the left player, [leftCount, zoneCount) to
 // the right player. Each side races to clear their own zones independently
-// (same rules as GridClearGame, per side). The round ends the instant either
+// (same rules as KnockoutGame, per side). The round ends the instant either
 // side fully clears, or when time runs out - whichever comes first. Winner
 // is whoever cleared first (or cleared more, if the clock ran out first);
 // simultaneous/equal clears are a draw.

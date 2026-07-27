@@ -86,6 +86,25 @@ void GameEngine::printResults() {
     if (r.winner == 0) Serial.println(F("Winner: LEFT player"));
     else if (r.winner == 1) Serial.println(F("Winner: RIGHT player"));
     else if (r.winner == 2) Serial.println(F("Result: DRAW"));
+    if (r.winner == -1) {
+        // Cleared before time ran out -> score is the clear time. Otherwise
+        // -> score is how many zones got knocked out before the buzzer.
+        Serial.print(F("Score: "));
+        if (r.completed) {
+            Serial.print(r.elapsedMs);
+            Serial.println(F(" ms to clear the board"));
+        } else {
+            Serial.print(r.totalHits);
+            Serial.print(F("/"));
+            Serial.print(r.zoneCount);
+            Serial.println(F(" zones knocked out"));
+        }
+    }
+    if (r.bestTimeMs > 0) {
+        Serial.print(F("Best clear time this session: "));
+        Serial.print(r.bestTimeMs);
+        Serial.println(F(" ms"));
+    }
     for (uint8_t z = 0; z < r.zoneCount; ++z) {
         Serial.print(F("  zone "));
         Serial.print(z);

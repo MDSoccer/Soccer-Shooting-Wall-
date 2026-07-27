@@ -28,7 +28,7 @@ lib/game_core/            Hardware-free game logic (unit tested, no Arduino deps
   GameMode.h               Interface every game mode implements
   HitArbiter.{h,cpp}       False-hit mitigation: amplitude arbitration + lockout
   SimpleRng.h              Tiny deterministic PRNG (used by Random Grid)
-  GridClearGame.{h,cpp}    MVP game mode
+  KnockoutGame.{h,cpp}     Primary game mode
   RandomGridGame.{h,cpp}   Randomized-target variant
   TwoPlayerSplitGame.{h,cpp}  Left/right competitive variant
 src/                       ESP32-S3 firmware (Arduino framework)
@@ -42,27 +42,38 @@ test/test_game_core/      Native unit tests for lib/game_core (no hardware neede
 
 ## Game modes
 
-All three modes share the same Serial control surface (115200 baud) via
-`GameEngine`:
+All modes share the same Serial control surface (115200 baud) via
+`GameEngine`. Knockout is mode 0, so a plain `start` right after boot plays
+it:
 - `start` — begin a round in whichever mode is currently selected
 - `reset` — abort back to idle at any time
 - `mode` — cycle to the next mode (only while idle)
 - `mode <n>` — jump straight to mode index `n` (0-based; printed at idle)
 
-### Grid Clear (MVP)
+### Knockout (primary game)
 
-Every configured zone (`ZONE_COUNT` in `config.h`) lights up amber/red as a
-live target. Hitting a zone turns it green and it stays cleared for the rest
-of the round. The round ends the instant all zones are cleared, or when the
-time limit (`GRID_GAME_DURATION_MS`) runs out first — whichever comes first.
+Every configured zone (`ZONE_COUNT` in `config.h`, defaults to 12) lights up
+amber/red as a live target. Hitting a zone knocks it out (turns it green) and
+it stays down for the rest of the round.
+
+Rules, exactly as specified: every zone must be knocked out within
+`KNOCKOUT_DURATION_MS` (ninety seconds), period.
+- Clear the whole board before the buzzer -> **score = clear time**
+  (lower is better). `KnockoutGame` tracks the fastest clear time seen this
+  session as a running best/record (resets on power-cycle — there's no
+  persistent storage yet).
+- Buzzer goes first -> **score = number of zones knocked out**.
+
+Both the round's score and the session-best clear time print to Serial at
+the end of every round.
 
 ### Random Grid
 
-Same clear-all-before-the-timer rules as Grid Clear, but only
+Same clear-all-before-the-timer rules as Knockout, but only
 `RANDOM_TARGET_COUNT` of the `ZONE_COUNT` zones are chosen as live targets
 each round (picked fresh via `SimpleRng`, reseeded from `millis()` at the
 start of each round) — the rest of the panel stays dark all round. Harder
-than Grid Clear since players have to recognize which panels are actually
+than Knockout since players have to recognize which panels are actually
 live.
 
 ### Two-Player Split
@@ -77,7 +88,7 @@ more zones wins (an equal count is a draw). This is written generically
 
 Results (hits, timing per zone, wasted hits on non-target/already-cleared
 zones, and — for Two-Player Split — the winner) print to Serial after every
-round.
+round for all three modes.
 
 ## False-hit mitigation
 
@@ -120,14 +131,14 @@ automatically, no engine changes needed.
 Note on assumptions: the project plan names "random grid pattern" and
 "two players left/right 6 grids" as future modes but doesn't specify their
 exact win conditions, so the implementations here made a call — Random Grid
-plays like Grid Clear with a randomized target subset, and Two-Player Split
+plays like Knockout with a randomized target subset, and Two-Player Split
 is a race-to-clear-your-side. If those aren't the rules you had in mind, the
 logic to change lives entirely in `RandomGridGame.cpp` / `TwoPlayerSplitGame.cpp`
 and their tests — nothing else needs to change.
 
 ## Scaling from Phase 1 to Phase 3
 
-Bump `ZONE_COUNT` in `config.h` (1 -> 4 -> 12) as you move from the single
-panel prototype through the four-panel and twelve-panel builds. The
-CD74HC4067 supports up to 16 channels, so no mux changes are needed until
-past 12 zones.
+`ZONE_COUNT` in `config.h` defaults to 12 (the full wall Knockout is scored
+against). Drop it to 1 or 4 while you're still on the single-panel or
+four-panel prototype. The CD74HC4067 supports up to 16 channels, so no mux
+changes are needed until past 12 zones.

@@ -7,8 +7,10 @@
 
 // ---- Zone topology ----
 // Number of target zones actually wired up right now. Phase 1 = 1,
-// Phase 2 = 4, Phase 3 = 12. The CD74HC4067 mux supports up to 16.
-constexpr uint8_t ZONE_COUNT = 4;
+// Phase 2 = 4, Phase 3 = 12 (the full wall Knockout is designed for). The
+// CD74HC4067 mux supports up to 16. Drop this to 1 or 4 while prototyping
+// earlier phases.
+constexpr uint8_t ZONE_COUNT = 12;
 
 // ---- CD74HC4067 multiplexer control pins ----
 // S0-S3 select one of 16 mux channels; SIG is the shared analog output fed
@@ -33,7 +35,8 @@ constexpr uint32_t ARBITRATION_WINDOW_MS = 15; // plan calls for comparing ampli
 constexpr uint32_t HIT_LOCKOUT_MS = 150;       // plan calls for a 100-250ms per-zone lockout after a hit
 
 // ---- Game timing defaults ----
-constexpr uint32_t GRID_GAME_DURATION_MS = 30000;   // Grid Clear round length
+// Knockout rule: every zone must be cleared within ninety seconds, period.
+constexpr uint32_t KNOCKOUT_DURATION_MS = 90000;
 constexpr uint32_t RANDOM_GAME_DURATION_MS = 30000; // Random Grid round length
 constexpr uint8_t RANDOM_TARGET_COUNT = 2;          // how many of ZONE_COUNT zones are live targets each round
 constexpr uint32_t SPLIT_GAME_DURATION_MS = 30000;  // Two-Player Split round length

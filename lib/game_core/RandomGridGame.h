@@ -2,7 +2,7 @@
 #include "GameMode.h"
 #include "SimpleRng.h"
 
-// Same win/lose rules as GridClearGame (hit every live target before time
+// Same win/lose rules as KnockoutGame (hit every live target before time
 // runs out), but only a random subset of zones are targets each round; the
 // rest stay dark for the whole round. Harder variant since players must
 // recognize which panels are actually live, not just react to everything.
